@@ -89,3 +89,6 @@ jobs:
           JWT_ACCESS_SECRET: test_access_secret_32chars_long_ci
           JWT_REFRESH_SECRET: test_refresh_secret_32chars_long_ci
           COOKIE_SECRET: test_cookie_secret_32chars_long_ci
+          RAZORPAY_KEY_ID: rzp_test_DriveEaseTestKey123
+          RAZORPAY_KEY_SECRET: dummy_rzp_secret
+          RAZORPAY_WEBHOOK_SECRET: rzp_webhook_secret_driveease_2026

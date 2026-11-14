@@ -5,6 +5,7 @@ import prisma from '../src/config/db';
 import { BookingService } from '../src/services/booking.service';
 import { BookingStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { ENV } from '../src/config/env';
 
 describe('💳 Phase 5: Payment Gateway, Signature Verification & Webhook Tests', () => {
   let customer: any;
@@ -90,7 +91,7 @@ describe('💳 Phase 5: Payment Gateway, Signature Verification & Webhook Tests'
   it('1. Cryptographically generates and validates authentic Razorpay HMAC SHA-256 signature', () => {
     const orderId = 'order_valid_12345';
     const paymentId = 'pay_valid_67890';
-    const secret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_secret_DriveEase';
+    const secret = ENV.RAZORPAY_KEY_SECRET;
 
     const hmac = crypto.createHmac('sha256', secret);
     hmac.update(`${orderId}|${paymentId}`);
