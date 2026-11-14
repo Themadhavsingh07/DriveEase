@@ -1,0 +1,21 @@
+{
+  "name": "driveease",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DriveEase - Advanced Car Rental Booking Portal",
+  "scripts": {
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,cyan\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "db:push": "npm --prefix backend run db:push",
+    "seed": "npm --prefix backend run prisma:seed",
+    "test": "npm --prefix backend test",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}

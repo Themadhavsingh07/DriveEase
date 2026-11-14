@@ -1,0 +1,25 @@
+# ==============================================================================
+# DriveEase Production Robots.txt
+# ==============================================================================
+User-agent: *
+Allow: /
+Allow: /cars
+Allow: /cars/*
+Allow: /about
+Allow: /contact
+Allow: /how-it-works
+Allow: /privacy
+Allow: /terms
+Allow: /cancellation-policy
+Allow: /faq
+Allow: /guidelines
+
+# Disallow customer private dashboard and administrative portals from search indexing
+Disallow: /dashboard/
+Disallow: /dashboard/*
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /booking/checkout
+Disallow: /api/
+
+Sitemap: https://driveease.vercel.app/sitemap.xml
