@@ -54,9 +54,11 @@ import {
   AlertTriangle,
   Lock,
 } from 'lucide-react';
+import { AdminDashboardCharts } from './AdminDashboardCharts';
 
 interface AdminDashboardProps {
   initialTab?: string;
+  hideHeaderTabs?: boolean;
 }
 
 type TabType =
@@ -69,7 +71,7 @@ type TabType =
   | 'audit-logs'
   | 'coupons';
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab }) => {
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab, hideHeaderTabs = false }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -560,58 +562,60 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab }) =>
   });
 
   return (
-    <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <div className={`${hideHeaderTabs ? 'space-y-6' : 'py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8'}`}>
       {/* Top Header Card */}
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-2xl">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 shadow-inner">
-            <ShieldAlert className="w-7 h-7" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black text-white tracking-tight">DriveEase Master Control</h1>
-              <Badge variant="amber" size="sm">
-                Admin Console
-              </Badge>
+      {!hideHeaderTabs && (
+        <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-2xl">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 shadow-inner">
+              <ShieldAlert className="w-7 h-7" />
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Real-time enterprise dashboard: fleet inventory, customer verifications, revenue analytics, and audit security.
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-black text-white tracking-tight">DriveEase Master Control</h1>
+                <Badge variant="amber" size="sm">
+                  Admin Console
+                </Badge>
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Real-time enterprise dashboard: fleet inventory, customer verifications, revenue analytics, and audit security.
+              </p>
+            </div>
+          </div>
+
+          {/* Tab Switcher Pills */}
+          <div className="flex items-center bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 text-xs overflow-x-auto w-full md:w-auto shadow-inner">
+            {[
+              { id: 'overview', label: 'Overview', icon: BarChart3 },
+              { id: 'vehicles', label: 'Fleet', icon: CarIcon },
+              { id: 'bookings', label: 'Bookings', icon: Calendar },
+              { id: 'customers', label: 'Customers', icon: Users },
+              { id: 'analytics', label: 'Reports', icon: TrendingUp },
+              { id: 'settings', label: 'Settings', icon: Settings },
+              { id: 'audit-logs', label: 'Audit Trail', icon: History },
+              { id: 'coupons', label: 'Coupons', icon: Sparkles },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleTabChange(tab.id as TabType)}
+                  className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         </div>
-
-        {/* Tab Switcher Pills */}
-        <div className="flex items-center bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 text-xs overflow-x-auto w-full md:w-auto shadow-inner">
-          {[
-            { id: 'overview', label: 'Overview', icon: BarChart3 },
-            { id: 'vehicles', label: 'Fleet', icon: CarIcon },
-            { id: 'bookings', label: 'Bookings', icon: Calendar },
-            { id: 'customers', label: 'Customers', icon: Users },
-            { id: 'analytics', label: 'Reports', icon: TrendingUp },
-            { id: 'settings', label: 'Settings', icon: Settings },
-            { id: 'audit-logs', label: 'Audit Trail', icon: History },
-            { id: 'coupons', label: 'Coupons', icon: Sparkles },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => handleTabChange(tab.id as TabType)}
-                className={`px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                  isActive
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      )}
 
       {/* ============================================================== */}
       {/* TAB 1: EXECUTIVE ANALYTICS OVERVIEW                            */}
@@ -718,86 +722,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ initialTab }) =>
                 </div>
               </div>
 
-              {/* Monthly Revenue Trend Visualizer */}
-              <div className="glass-panel rounded-3xl p-6 sm:p-7 border border-slate-800 space-y-4">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-base font-bold text-white">Monthly Earned Revenue & Volume</h3>
-                    <p className="text-xs text-slate-400">Computed strictly from real PostgreSQL booking records.</p>
-                  </div>
-                  <span className="text-xs font-mono bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20">
-                    6 Months Trailing
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-6 gap-3.5 pt-2">
-                  {charts?.monthlyTrends?.map((item) => (
-                    <div
-                      key={item.month}
-                      className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center space-y-1 hover:border-slate-700 transition-colors"
-                    >
-                      <span className="text-xs font-black text-sky-400 block">{item.month}</span>
-                      <div className="text-base font-black text-white">{formatCurrency(item.revenue)}</div>
-                      <span className="text-[10px] text-slate-400 block">{item.bookings} Bookings</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Status Distribution & Category Revenue */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Booking Status Distribution */}
-                <div className="glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
-                  <h3 className="text-base font-bold text-white">Reservation Status Breakdown</h3>
-                  <div className="space-y-3">
-                    {charts?.statusDistribution?.map((st) => (
-                      <div key={st.status} className="space-y-1">
-                        <div className="flex justify-between text-xs font-semibold">
-                          <span className="text-slate-300">{st.status}</span>
-                          <span className="text-white font-mono">{st.count}</span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                          <div
-                            className={`h-full ${
-                              st.status === 'CONFIRMED'
-                                ? 'bg-emerald-500'
-                                : st.status === 'ACTIVE'
-                                ? 'bg-blue-500'
-                                : st.status === 'COMPLETED'
-                                ? 'bg-purple-500'
-                                : 'bg-rose-500'
-                            }`}
-                            style={{
-                              width: `${Math.min(100, (st.count / (stats?.totalBookings || 1)) * 100)}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Popular Vehicle Categories */}
-                <div className="glass-panel rounded-3xl p-6 border border-slate-800 space-y-4">
-                  <h3 className="text-base font-bold text-white">Popular Fleet Categories</h3>
-                  <div className="space-y-3">
-                    {charts?.categoryStats?.map((cat) => (
-                      <div
-                        key={cat.category}
-                        className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex justify-between items-center text-xs"
-                      >
-                        <span className="font-bold text-white">{cat.category}</span>
-                        <div className="text-right">
-                          <span className="font-mono text-sky-400 font-bold block">
-                            {formatCurrency(cat.revenue)}
-                          </span>
-                          <span className="text-[10px] text-slate-400">{cat.count} Bookings</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              {/* Interactive Recharts Analytics Visualizer */}
+              <AdminDashboardCharts
+                monthlyTrends={charts?.monthlyTrends}
+                statusDistribution={charts?.statusDistribution}
+                categoryStats={charts?.categoryStats}
+                fleetStats={{
+                  total: stats?.totalCars || 0,
+                  available: stats?.availableCars || 0,
+                  rented: stats?.activeRentals || 0,
+                  maintenance: 0,
+                }}
+              />
             </>
           )}
         </div>

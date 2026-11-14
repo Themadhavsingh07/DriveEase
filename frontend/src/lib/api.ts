@@ -1,4 +1,14 @@
-export const API_BASE = (import.meta.env.VITE_API_URL ? String(import.meta.env.VITE_API_URL) : '/api').replace(/\/$/, '');
+const getBaseUrl = (): string => {
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
+    return String(import.meta.env.VITE_API_URL).replace(/\/$/, '');
+  }
+  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL) {
+    return String(process.env.NEXT_PUBLIC_API_URL).replace(/\/$/, '');
+  }
+  return '/api';
+};
+
+export const API_BASE = getBaseUrl();
 
 export const getApiUrl = (endpoint: string): string => {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
@@ -27,7 +37,7 @@ async function request<T = any>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = localStorage.getItem('driveease_token');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('driveease_token') : null;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',

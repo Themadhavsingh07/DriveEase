@@ -84,7 +84,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 Rental Itinerary
               </h4>
               <p className="font-semibold text-slate-900 text-sm">
-                {booking.car.brand} {booking.car.model} ({booking.car.year})
+                {booking.car ? `${booking.car.brand} ${booking.car.model} (${booking.car.year})` : 'Luxury Vehicle'}
               </p>
               <p className="text-slate-600">
                 <strong>Pickup:</strong> {formatDateTime(booking.pickupDateTime)}
@@ -112,7 +112,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <tbody className="divide-y divide-slate-100">
                 <tr>
                   <td className="py-3 font-medium text-slate-800">
-                    Vehicle Rental: {booking.car.brand} {booking.car.model}
+                    Vehicle Rental: {booking.car ? `${booking.car.brand} ${booking.car.model}` : 'Luxury Vehicle'}
                   </td>
                   <td className="py-3 text-center">{booking.rentalDays} Days</td>
                   <td className="py-3 text-right">
@@ -144,10 +144,10 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                       </td>
                       <td className="py-3 text-center">{item.quantity}</td>
                       <td className="py-3 text-right">
-                        {formatCurrency(item.pricePerUnit)}
+                        {formatCurrency(item.pricePerUnit || 0)}
                       </td>
                       <td className="py-3 text-right font-semibold">
-                        {formatCurrency(item.totalPrice)}
+                        {formatCurrency(item.totalPrice || 0)}
                       </td>
                     </tr>
                   ))}

@@ -714,4 +714,191 @@ export class AdminService {
 
     return updatedEntries;
   }
+
+  /**
+   * 6. PAYMENTS MONITORING FOR ADMIN
+   */
+  static async getPayments(options: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+  } = {}) {
+    const page = Math.max(1, options.page || 1);
+    const limit = Math.min(100, Math.max(1, options.limit || 20));
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.PaymentWhereInput = {};
+
+    if (options.status && options.status !== 'ALL') {
+      where.paymentStatus = options.status as PaymentStatus;
+    }
+
+    if (options.search) {
+      where.OR = [
+        { transactionId: { contains: options.search, mode: 'insensitive' } },
+        { razorpayOrderId: { contains: options.search, mode: 'insensitive' } },
+        { razorpayPaymentId: { contains: options.search, mode: 'insensitive' } },
+        {
+          booking: {
+            OR: [
+              { bookingNumber: { contains: options.search, mode: 'insensitive' } },
+              { driverName: { contains: options.search, mode: 'insensitive' } },
+              { driverEmail: { contains: options.search, mode: 'insensitive' } },
+            ],
+          },
+        },
+      ];
+    }
+
+    const [total, payments] = await Promise.all([
+      prisma.payment.count({ where }),
+      prisma.payment.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          booking: {
+            select: {
+              id: true,
+              bookingNumber: true,
+              totalAmount: true,
+              securityDeposit: true,
+              bookingStatus: true,
+              pickupDateTime: true,
+              returnDateTime: true,
+              driverName: true,
+              driverEmail: true,
+              car: {
+                select: {
+                  id: true,
+                  brand: true,
+                  model: true,
+                  images: { take: 1, select: { url: true } },
+                },
+              },
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                  phone: true,
+                },
+              },
+            },
+          },
+          refunds: true,
+        },
+      }),
+    ]);
+
+    return {
+      payments,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * 7. REFUNDS MONITORING FOR ADMIN
+   */
+  static async getRefunds(options: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  } = {}) {
+    const page = Math.max(1, options.page || 1);
+    const limit = Math.min(100, Math.max(1, options.limit || 20));
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.RefundWhereInput = {};
+
+    if (options.status && options.status !== 'ALL') {
+      where.status = options.status as PaymentStatus;
+    }
+
+    const [total, refunds] = await Promise.all([
+      prisma.refund.count({ where }),
+      prisma.refund.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          booking: {
+            select: {
+              id: true,
+              bookingNumber: true,
+              totalAmount: true,
+              securityDeposit: true,
+              bookingStatus: true,
+              driverName: true,
+              driverEmail: true,
+              user: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                },
+              },
+            },
+          },
+          payment: {
+            select: {
+              id: true,
+              razorpayPaymentId: true,
+              razorpayOrderId: true,
+              amount: true,
+              paymentStatus: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    return {
+      refunds,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * 8. ADMIN NOTIFICATIONS
+   */
+  static async getAdminNotifications(adminId: string, limit = 20) {
+    const notifications = await prisma.notification.findMany({
+      where: {
+        OR: [
+          { userId: adminId },
+          { type: { in: ['SYSTEM', 'ADMIN_ALERT', 'DOCUMENT_VERIFIED', 'DOCUMENT_REJECTED'] } },
+        ],
+      },
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const unreadCount = await prisma.notification.count({
+      where: {
+        userId: adminId,
+        isRead: false,
+      },
+    });
+
+    return {
+      notifications,
+      unreadCount,
+    };
+  }
 }

@@ -556,3 +556,58 @@ export const createCoupon = async (req: Request, res: Response, next: NextFuncti
     next(error);
   }
 };
+
+/**
+ * 14. ADMIN PAYMENTS & REFUNDS MONITORING
+ */
+export const getAllPaymentsAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit, status, search } = req.query as Record<string, string>;
+    const result = await AdminService.getPayments({
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 20,
+      status,
+      search,
+    });
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllRefundsAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit, status } = req.query as Record<string, string>;
+    const result = await AdminService.getRefunds({
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 20,
+      status,
+    });
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * 15. ADMIN NOTIFICATIONS
+ */
+export const getAdminNotificationsController = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const adminId = req.user?.id || '';
+    const result = await AdminService.getAdminNotifications(adminId);
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

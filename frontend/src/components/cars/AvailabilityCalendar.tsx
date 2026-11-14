@@ -141,7 +141,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
 
-  const days = [];
+  const days: (Date | null)[] = [];
   for (let i = 0; i < firstDayIndex; i++) {
     days.push(null);
   }

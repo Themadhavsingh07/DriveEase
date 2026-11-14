@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types';
 import api from '../lib/api';
@@ -28,7 +30,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(data.user);
       } catch {
         setUser(null);
-        localStorage.removeItem('driveease_token');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('driveease_token');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -45,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
       });
 
-      if (data.token) {
+      if (data.token && typeof window !== 'undefined') {
         localStorage.setItem('driveease_token', data.token);
       }
       setUser(data.user);
@@ -59,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const data = await api.post<{ user: User; token: string }>('/auth/register', userData);
-      if (data.token) {
+      if (data.token && typeof window !== 'undefined') {
         localStorage.setItem('driveease_token', data.token);
       }
       setUser(data.user);
@@ -75,7 +79,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       // Ignore network errors on logout
     } finally {
-      localStorage.removeItem('driveease_token');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('driveease_token');
+      }
       setUser(null);
     }
   };

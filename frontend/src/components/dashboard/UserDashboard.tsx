@@ -292,7 +292,7 @@ export const UserDashboard: React.FC = () => {
             <div className="grid grid-cols-1 gap-5">
               {bookings.map((booking) => {
                 const primaryImage =
-                  booking.car.images?.[0]?.url ||
+                  booking.car?.images?.[0]?.url ||
                   'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80';
 
                 const canCancel =
@@ -308,7 +308,7 @@ export const UserDashboard: React.FC = () => {
                     <div className="flex items-center gap-5 w-full md:w-auto">
                       <img
                         src={primaryImage}
-                        alt={booking.car.brand}
+                        alt={booking.car?.brand || 'Vehicle'}
                         className="w-24 h-20 sm:w-32 sm:h-24 rounded-xl object-cover shrink-0 bg-slate-900"
                       />
                       <div>
@@ -319,7 +319,7 @@ export const UserDashboard: React.FC = () => {
                           {getStatusBadge(booking.bookingStatus)}
                         </div>
                         <h3 className="text-lg font-bold text-white mt-1">
-                          {booking.car.brand} {booking.car.model}
+                          {booking.car?.brand || 'Luxury'} {booking.car?.model || 'Vehicle'}
                         </h3>
                         <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mt-1">
                           <span className="flex items-center gap-1">
@@ -525,7 +525,7 @@ export const UserDashboard: React.FC = () => {
               <div>
                 <span className="text-slate-500 block">Vehicle</span>
                 <span className="text-white font-bold text-sm">
-                  {selectedDetailsBooking.car.brand} {selectedDetailsBooking.car.model}
+                  {selectedDetailsBooking.car ? `${selectedDetailsBooking.car.brand} ${selectedDetailsBooking.car.model}` : 'Luxury Vehicle'}
                 </span>
               </div>
               <div>

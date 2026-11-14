@@ -208,4 +208,44 @@ export const adminApi = {
 
     return api.get(`/admin/audit-logs${qs.toString() ? `?${qs.toString()}` : ''}`);
   },
+
+  /**
+   * Payment & Refund Tracking
+   */
+  getPayments: async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+  }): Promise<{ payments: any[]; pagination: { total: number; page: number; limit: number; totalPages: number } }> => {
+    const qs = new URLSearchParams();
+    if (params?.page) qs.append('page', String(params.page));
+    if (params?.limit) qs.append('limit', String(params.limit));
+    if (params?.status) qs.append('status', params.status);
+    if (params?.search) qs.append('search', params.search);
+
+    return api.get(`/admin/payments${qs.toString() ? `?${qs.toString()}` : ''}`);
+  },
+
+  getRefunds: async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+  }): Promise<{ refunds: any[]; pagination: { total: number; page: number; limit: number; totalPages: number } }> => {
+    const qs = new URLSearchParams();
+    if (params?.page) qs.append('page', String(params.page));
+    if (params?.limit) qs.append('limit', String(params.limit));
+    if (params?.status) qs.append('status', params.status);
+    if (params?.search) qs.append('search', params.search);
+
+    return api.get(`/admin/refunds${qs.toString() ? `?${qs.toString()}` : ''}`);
+  },
+
+  /**
+   * Admin Notifications
+   */
+  getNotifications: async (): Promise<{ notifications: any[]; unreadCount: number }> => {
+    return api.get('/admin/notifications');
+  },
 };

@@ -17,6 +17,9 @@ import {
   getAuditLogs,
   getCoupons,
   createCoupon,
+  getAllPaymentsAdmin,
+  getAllRefundsAdmin,
+  getAdminNotificationsController,
 } from '../controllers/admin.controller';
 import {
   createCar,
@@ -36,7 +39,12 @@ router.use(authenticateUser, requireAdmin);
 // Dashboard & Analytics
 router.get('/dashboard', getAdminStats);
 router.get('/dashboard/overview', getAdminStats);
+router.get('/dashboard/revenue', getAdminStats);
+router.get('/dashboard/bookings', getAllBookings);
 router.get('/analytics', getMonthlyAnalytics);
+router.get('/analytics/revenue', getMonthlyAnalytics);
+router.get('/analytics/bookings', getMonthlyAnalytics);
+router.get('/analytics/vehicles', getMonthlyAnalytics);
 router.get('/reports/export', exportReports);
 
 // Admin Vehicle Fleet Management
@@ -61,6 +69,13 @@ router.patch('/documents/:id/status', reviewDocumentStatus);
 router.get('/bookings', getAllBookings);
 router.get('/bookings/:id', getBookingDetailsAdmin);
 router.patch('/bookings/:id/status', updateBookingStatus);
+
+// Payments & Refunds Monitoring (Part 3 Section F & Part 5)
+router.get('/payments', getAllPaymentsAdmin);
+router.get('/refunds', getAllRefundsAdmin);
+
+// Admin Notifications
+router.get('/notifications', getAdminNotificationsController);
 
 // Business Settings & Audit Trail
 router.get('/settings', getSettings);
