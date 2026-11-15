@@ -59,7 +59,10 @@ async function request<T = any>(
   }));
 
   if (!response.ok || !data.success) {
-    const errorMsg = data.error?.message || data.message || `Request failed with status ${response.status}`;
+    const fieldErrors = Array.isArray((data as any).errors) && (data as any).errors.length > 0
+      ? (data as any).errors.map((e: any) => e.message || `${e.field}: ${e.message}`).join(', ')
+      : null;
+    const errorMsg = fieldErrors || data.error?.message || data.message || `Request failed with status ${response.status}`;
     throw new ApiError(errorMsg, response.status);
   }
 

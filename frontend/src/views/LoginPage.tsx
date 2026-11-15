@@ -77,7 +77,7 @@ export const LoginPage: React.FC = () => {
             </button>
             <button
               type="button"
-              onClick={() => fillDemo('admin@driveease.com', 'admin123')}
+              onClick={() => fillDemo('madhavvats@gmail.com', 'admin123')}
               className="py-1.5 px-3 rounded-xl bg-white hover:bg-slate-100 text-xs font-semibold text-[#101B2D] border border-slate-300 transition-colors shadow-xs cursor-pointer"
             >
               Fill Admin

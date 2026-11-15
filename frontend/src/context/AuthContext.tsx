@@ -94,7 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const demoLogin = async (role: 'admin' | 'customer') => {
     if (role === 'admin') {
-      await login('admin@driveease.com', 'admin123');
+      await login('madhavvats@gmail.com', 'admin123');
     } else {
       await login('customer@driveease.com', 'password123');
     }

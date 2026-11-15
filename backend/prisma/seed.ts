@@ -35,11 +35,11 @@ async function main() {
 
   const admin = await prisma.user.create({
     data: {
-      email: 'admin@driveease.com',
+      email: process.env.SEED_ADMIN_EMAIL || 'madhavvats@gmail.com',
       password: adminPasswordHash,
-      name: 'Alexander Sterling',
-      firstName: 'Alexander',
-      lastName: 'Sterling',
+      name: 'Madhav Vats',
+      firstName: 'Madhav',
+      lastName: 'Vats',
       phone: '+91 98765 43210',
       drivingLicenseNumber: 'DL-ADMIN-2024-9988',
       role: Role.ADMIN,

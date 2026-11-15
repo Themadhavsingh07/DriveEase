@@ -114,14 +114,36 @@ export const CheckoutPage: React.FC = () => {
     queryFn: bookingApi.getAdditionalServices,
   });
 
-  // Calculate ISO strings for pickup & return
+  // Calculate ISO strings for pickup & return (standard ISO format)
   const pickupDateTime = useMemo(() => {
-    return `${pickupDate}T${pickupTime}:00`;
+    try {
+      const dt = new Date(`${pickupDate}T${pickupTime || '10:00'}:00`);
+      if (!isNaN(dt.getTime())) return dt.toISOString();
+    } catch {}
+    return `${pickupDate}T${pickupTime || '10:00'}:00.000Z`;
   }, [pickupDate, pickupTime]);
 
   const returnDateTime = useMemo(() => {
-    return `${returnDate}T${returnTime}:00`;
+    try {
+      const dt = new Date(`${returnDate}T${returnTime || '10:00'}:00`);
+      if (!isNaN(dt.getTime())) return dt.toISOString();
+    } catch {}
+    return `${returnDate}T${returnTime || '10:00'}:00.000Z`;
   }, [returnDate, returnTime]);
+
+  // Synchronize authenticated driver information
+  useEffect(() => {
+    if (user) {
+      if (!driverName && (user.firstName || user.name)) {
+        setDriverName(user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim());
+      }
+      if (!driverEmail && user.email) setDriverEmail(user.email);
+      if (!driverPhone && user.phone) setDriverPhone(user.phone);
+      if (!driverLicenseNumber && user.drivingLicenseNumber) {
+        setDriverLicenseNumber(user.drivingLicenseNumber);
+      }
+    }
+  }, [user]);
 
   // Recalculate price authoritatively whenever vehicle, dates, insurance, services, or coupon changes
   useEffect(() => {
@@ -202,6 +224,28 @@ export const CheckoutPage: React.FC = () => {
   const handleProceedToPayment = async () => {
     if (!car) return;
     setCheckoutError(null);
+
+    if (!driverName || driverName.trim().length < 2) {
+      setCheckoutError('Please provide a valid full driver name in Step 2.');
+      setCurrentStep(2);
+      return;
+    }
+    if (!driverEmail || !driverEmail.includes('@')) {
+      setCheckoutError('Please provide a valid email address in Step 2.');
+      setCurrentStep(2);
+      return;
+    }
+    if (!driverPhone || driverPhone.trim().length < 5) {
+      setCheckoutError('Please provide a valid contact phone number in Step 2.');
+      setCurrentStep(2);
+      return;
+    }
+    if (!driverLicenseNumber || driverLicenseNumber.trim().length < 3) {
+      setCheckoutError("Please provide a valid driving license number in Step 2.");
+      setCurrentStep(2);
+      return;
+    }
+
     setIsProcessingPayment(true);
 
     try {
@@ -209,16 +253,16 @@ export const CheckoutPage: React.FC = () => {
         carId: car.id,
         pickupDateTime,
         returnDateTime,
-        pickupLocation,
-        dropoffLocation,
+        pickupLocation: pickupLocation || 'DriveEase Central Hub',
+        dropoffLocation: dropoffLocation || pickupLocation || 'DriveEase Central Hub',
         insuranceType,
         serviceIds: selectedServiceIds,
         couponCode: appliedCoupon || undefined,
-        driverName,
-        driverEmail,
-        driverPhone,
-        driverLicenseNumber,
-        notes,
+        driverName: driverName.trim(),
+        driverEmail: driverEmail.trim(),
+        driverPhone: driverPhone.trim(),
+        driverLicenseNumber: driverLicenseNumber.trim(),
+        notes: notes?.trim() || undefined,
       });
 
       setHoldBookingId(holdRes.booking.id);

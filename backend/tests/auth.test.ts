@@ -211,10 +211,11 @@ describe('🔐 Phase 3 Authentication & RBAC Integration Tests', () => {
 
     it('ADMIN role login should succeed and grant access to /api/v1/admin/dashboard with 200', async () => {
       // 1. Login as Admin
+      const adminEmail = process.env.SEED_ADMIN_EMAIL || 'madhavvats@gmail.com';
       const loginRes = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          email: 'admin@driveease.com',
+          email: adminEmail,
           password: 'admin123',
         });
 

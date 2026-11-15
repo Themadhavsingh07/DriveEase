@@ -18,7 +18,8 @@ export const errorHandler = (
   // 1. Zod Validation Errors
   if (err instanceof ZodError) {
     statusCode = 400;
-    message = 'Validation failed for submitted data';
+    const detail = err.errors.map((e) => `${e.path.join('.') || 'field'}: ${e.message}`).join(', ');
+    message = detail ? `Validation failed: ${detail}` : 'Validation failed for submitted data';
     errors = err.errors.map((e) => ({
       field: e.path.join('.'),
       message: e.message,
