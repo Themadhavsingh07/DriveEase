@@ -47,16 +47,26 @@ export const NavLink = React.forwardRef<HTMLAnchorElement, LinkProps & { activeC
 );
 NavLink.displayName = 'NavLink';
 
+let memoryNavState: any = null;
+
 export function useNavigate() {
   const router = useNextRouter();
 
   return useCallback(
-    (to: string | number, options?: { replace?: boolean }) => {
+    (to: string | number, options?: { replace?: boolean; state?: any }) => {
       if (typeof to === 'number') {
         if (to === -1) {
           router.back();
         }
         return;
+      }
+      if (options?.state !== undefined) {
+        memoryNavState = options.state;
+        if (typeof window !== 'undefined') {
+          try {
+            window.sessionStorage.setItem('__driveease_nav_state__', JSON.stringify(options.state));
+          } catch {}
+        }
       }
       if (options?.replace) {
         router.replace(to);
@@ -72,11 +82,33 @@ export function useLocation() {
   const pathname = useNextPathname() || '/';
   const [search, setSearch] = useState('');
   const [hash, setHash] = useState('');
+  const [state, setState] = useState<any>(() => {
+    if (memoryNavState !== null) return memoryNavState;
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = window.sessionStorage.getItem('__driveease_nav_state__');
+        return stored ? JSON.parse(stored) : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setSearch(window.location.search);
       setHash(window.location.hash);
+      if (memoryNavState !== null) {
+        setState(memoryNavState);
+      } else {
+        try {
+          const stored = window.sessionStorage.getItem('__driveease_nav_state__');
+          if (stored) {
+            setState(JSON.parse(stored));
+          }
+        } catch {}
+      }
     }
   }, [pathname]);
 
@@ -85,10 +117,10 @@ export function useLocation() {
       pathname,
       search: typeof window !== 'undefined' ? window.location.search : search,
       hash: typeof window !== 'undefined' ? window.location.hash : hash,
-      state: null,
+      state,
       key: 'default',
     }),
-    [pathname, search, hash]
+    [pathname, search, hash, state]
   );
 }
 

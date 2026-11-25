@@ -1,8 +1,13 @@
-'use client';
-
 import React, { Suspense } from 'react';
-import { CarDetailsPage } from '../../../../views/CarDetailsPage';
+import { mockCars } from '../../../../data/cars';
+import { CarDetailPageClient } from './CarDetailPageClient';
 import { Spinner } from '../../../../components/common/Spinner';
+
+export function generateStaticParams() {
+  return mockCars.map((car) => ({
+    id: car.id,
+  }));
+}
 
 export default function CarDetailPage() {
   return (
@@ -16,7 +21,7 @@ export default function CarDetailPage() {
         </div>
       }
     >
-      <CarDetailsPage />
+      <CarDetailPageClient />
     </Suspense>
   );
 }

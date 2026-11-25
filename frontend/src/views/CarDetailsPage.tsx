@@ -614,7 +614,7 @@ export const CarDetailsPage: React.FC = () => {
                   : ''
               }`}
               onClick={() => {
-                navigate('/booking/checkout', {
+                navigate(`/booking/checkout?carId=${car.id}`, {
                   state: {
                     car,
                     pickupDate,

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
 import { bookingApi } from '../services/booking.api';
+import { mockCars } from '../data/cars';
 import { Car, AdditionalService } from '../types';
 import { DetailedPricingBreakdown } from '../types/booking';
 import { Button } from '../components/common/Button';
@@ -51,7 +52,18 @@ export const CheckoutPage: React.FC = () => {
     insuranceTier?: 'BASIC' | 'PREMIUM' | 'COMPREHENSIVE';
   } | null;
 
-  const car = state?.car;
+  // Resolve car from state or query params (?carId=...)
+  const car = useMemo(() => {
+    if (state?.car) return state.car;
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const qId = sp.get('carId');
+      if (qId) {
+        return mockCars.find((c) => c.id === qId);
+      }
+    }
+    return mockCars[0];
+  }, [state?.car]);
 
   // Checkout step: 1 (Trip), 2 (Driver), 3 (Protection & Services), 4 (Summary & Coupon), 5 (Payment & Hold)
   const [currentStep, setCurrentStep] = useState<number>(1);
