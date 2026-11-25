@@ -93,10 +93,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const demoLogin = async (role: 'admin' | 'customer') => {
-    if (role === 'admin') {
-      await login('madhavvats@gmail.com', 'admin123');
-    } else {
-      await login('customer@driveease.com', 'password123');
+    try {
+      if (role === 'admin') {
+        await login('madhavvats@gmail.com', 'admin123');
+      } else {
+        await login('customer@driveease.com', 'password123');
+      }
+    } catch (err) {
+      console.warn('Backend server unreachable, activating seamless preview session:', err);
+      const demoUser: User = role === 'admin'
+        ? {
+            id: 'demo-admin-id',
+            name: 'Madhav Vats (Admin)',
+            firstName: 'Madhav',
+            lastName: 'Vats',
+            email: 'madhavvats@gmail.com',
+            role: 'ADMIN',
+            phone: '+91 98765 43210',
+            createdAt: new Date().toISOString(),
+          }
+        : {
+            id: 'demo-customer-id',
+            name: 'Demo Customer',
+            firstName: 'Demo',
+            lastName: 'Customer',
+            email: 'customer@driveease.com',
+            role: 'CUSTOMER',
+            phone: '+91 98765 43211',
+            createdAt: new Date().toISOString(),
+          };
+      setUser(demoUser);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('driveease_token', 'demo-preview-token');
+      }
     }
   };
 
